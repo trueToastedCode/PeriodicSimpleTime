@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "periodic_simpletime"
+version = "1.0.3"
+authors = [
+  { name="trueToastedCode", email="truetoastedcode@gmail.com" },
+]
+description = "A periodic event time management helper"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/trueToastedCode/PeriodicSimpleTime"
+"Bug Tracker" = "https://github.com/trueToastedCode/PeriodicSimpleTime/issues"
