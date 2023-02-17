@@ -108,16 +108,17 @@ class PeriodicSimpleTime:
         return PeriodicSimpleTime.from_microseconds(diff), is_overnight
 
 
-def get_next_periodic_dt(period: PeriodicSimpleTime) -> datetime:
+def get_next_periodic_dt(period: PeriodicSimpleTime, dt: datetime = None) -> datetime:
     """
     Calculate the next datetime based on a given period,
     e.g. you want the next 5min periodic datetime,
     currently it is 15:1:0,
     this method will calculate 15:5:0 as return
     :param period: Period
+    :param dt: Time for which to calculate the next dt, defaults to utcnow
     :return: datetime
     """
-    dt = datetime.utcnow()
+    dt = dt or datetime.utcnow()
     st = PeriodicSimpleTime.from_datetime(dt)
     next_p = st.get_next_period(period)
     _, is_overnight = st.calc_difference(next_p)
