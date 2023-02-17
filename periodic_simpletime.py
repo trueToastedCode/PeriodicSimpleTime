@@ -90,6 +90,23 @@ class PeriodicSimpleTime:
             return PeriodicSimpleTime()
         return PeriodicSimpleTime.from_microseconds(next_p_ms)
 
+    def get_previous_period(self, period: PeriodicSimpleTime) -> PeriodicSimpleTime:
+        """
+        Calculates the previous period based on the current PeriodicSimpleTime instance and the multiply on a given period
+        :param period: Period
+        :return: PeriodicSimpleTime
+        """
+        ms = self.to_microseconds()
+        p_ms = period.to_microseconds()
+        assert 8.64e+10 % p_ms == 0
+        if 0 < ms < p_ms:
+            # beginning of day, return 00:00
+            return PeriodicSimpleTime()
+        r = ms % p_ms
+        i = int((ms - r) / p_ms)
+        previous_p_ms = (i * p_ms if i else 8.64e+10) - (0 if r else p_ms)
+        return PeriodicSimpleTime.from_microseconds(previous_p_ms)
+
     def calc_difference(self, simple_time: PeriodicSimpleTime) -> tuple:
         """
         Calculate difference between the current PeriodicSimpleTime instance and the argument, supports overnight
@@ -126,3 +143,23 @@ def get_next_periodic_dt(period: PeriodicSimpleTime, dt: datetime = None) -> dat
         dt += timedelta(days=1)
     return datetime(year=dt.year, month=dt.month, day=dt.day,
                     hour=next_p.hour, minute=next_p.minute, second=next_p.second)
+
+
+def get_previous_periodic_dt(period: PeriodicSimpleTime, dt: datetime = None) -> datetime:
+    """
+    Calculate the previous datetime based on a given period,
+    e.g. you want the previous 5min periodic datetime,
+    currently it is 15:1:0,
+    this method will calculate 15:0:0 as return
+    :param period: Period
+    :param dt: Time for which to calculate the next dt, defaults to utcnow
+    :return: datetime
+    """
+    dt = dt or datetime.utcnow()
+    st = PeriodicSimpleTime.from_datetime(dt)
+    previous_p = st.get_previous_period(period)
+    _, is_overnight = previous_p.calc_difference(st)
+    if is_overnight:
+        dt -= timedelta(days=1)
+    return datetime(year=dt.year, month=dt.month, day=dt.day,
+                    hour=previous_p.hour, minute=previous_p.minute, second=previous_p.second)
